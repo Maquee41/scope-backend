@@ -1,16 +1,28 @@
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+TRUE_VALUES = ["true", "True", "1", "y", "Y"]
 
-SECRET_KEY = "change-me"
 
-DEBUG = True
+SECRET_KEY = os.getenv("SECRET_KEY_ENV", "change-me")
 
-ALLOWED_HOSTS = []
+DEBUG = os.getenv("DEBUG_ENV", "True") in TRUE_VALUES
+
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS_ENV", "*").split(",")
+CORS_ALLOW_ALL_ORIGINS = (
+    os.getenv("CORS_ALLOW_ALL_ORIGINS_ENV", "True") in TRUE_VALUES
+)
 
 
 INSTALLED_APPS = [
+    "corsheaders",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -23,6 +35,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -32,7 +45,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "range.urls"
+ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
     {
@@ -49,7 +62,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "range.wsgi.application"
+WSGI_APPLICATION = "config.wsgi.application"
 
 
 DATABASES = {
