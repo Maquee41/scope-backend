@@ -16,5 +16,5 @@ exclude = '''
 include_trailing_comma = true
 line_length = 79
 lines_after_imports = 2
-known_first_party = ["users"]
+known_first_party = ["users", "task_manager"]
 skip = ["__init__.py", ".venv", "venv"]

@@ -1,5 +1,5 @@
 [flake8]
-application-import-names = users
+application-import-names = task_manager,users
 exclude = .git,__pycache__,venv,.venv,__init__.py
 max-line-length = 79
 ignore = E203, E266, E501, W503
