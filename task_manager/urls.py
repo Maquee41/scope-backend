@@ -6,6 +6,7 @@ from task_manager.views import (
     TaskFileViewSet,
     TaskViewSet,
     WorkspaceViewSet,
+    get_workspace_details,
 )
 
 
@@ -17,4 +18,9 @@ router.register(r"files", TaskFileViewSet, basename="files")
 
 urlpatterns = [
     path("", include(router.urls)),
+    path(
+        "workspace/<int:workspace_id>/",
+        get_workspace_details,
+        name="workspace-details",
+    ),
 ]

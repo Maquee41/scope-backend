@@ -5,7 +5,7 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
-from users.views import profile_details, register
+from users.views import get_user_profile_by_id, profile_details, register
 
 
 urlpatterns = [
@@ -14,4 +14,9 @@ urlpatterns = [
     path("token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     path("me/", profile_details, name="profile_details"),
     path("register/", register, name="register"),
+    path(
+        "profile/<int:user_id>/",
+        get_user_profile_by_id,
+        name="user-profile-by-id",
+    ),
 ]
