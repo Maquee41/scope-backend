@@ -31,21 +31,32 @@ class Task(models.Model):
     ]
 
     workspace = models.ForeignKey(
-        Workspace, on_delete=models.CASCADE, related_name="tasks"
+        Workspace,
+        on_delete=models.CASCADE,
+        related_name="tasks",
     )
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     deadline = models.DateTimeField(null=True, blank=True)
     priority = models.CharField(
-        max_length=10, choices=PRIORITY_CHOICES, default="medium"
+        max_length=10,
+        choices=PRIORITY_CHOICES,
+        default="medium",
     )
     status = models.CharField(
-        max_length=20, choices=STATUS_CHOICES, default="todo"
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="todo",
     )
     creator = models.ForeignKey(
-        User, related_name="created_tasks", on_delete=models.CASCADE
+        User,
+        related_name="created_tasks",
+        on_delete=models.CASCADE,
+        blank=True,
     )
-    assignees = models.ManyToManyField(User, related_name="assigned_tasks")
+    assignees = models.ManyToManyField(
+        User, related_name="assigned_tasks", null=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

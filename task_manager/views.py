@@ -27,7 +27,11 @@ class TaskViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsWorkspaceMember]
 
     def get_queryset(self):
-        return Task.objects.filter(workspace__members=self.request.user)
+        queryset = Task.objects.filter(workspace__members=self.request.user)
+        workflow_id = self.request.query_params.get("workflow_id")
+        if workflow_id is not None:
+            queryset = queryset.filter(workspace=workflow_id)
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
