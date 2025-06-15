@@ -2,23 +2,10 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from task_manager.models import Comment, Task, TaskFile, Workspace
+from users.serializers import UserSerializer
 
 
 User = get_user_model()
-
-
-class WorkspaceSerializer(serializers.ModelSerializer):
-    creator = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    members = serializers.PrimaryKeyRelatedField(
-        many=True,
-        queryset=User.objects.all(),
-        required=False,
-        allow_empty=True,
-    )
-
-    class Meta:
-        model = Workspace
-        fields = ["id", "name", "creator", "members", "created_at"]
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -58,3 +45,12 @@ class TaskSerializer(serializers.ModelSerializer):
             "comments",
             "files",
         ]
+
+
+class WorkspaceSerializer(serializers.ModelSerializer):
+    creator = UserSerializer(read_only=True)
+    members = UserSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Workspace
+        fields = ["id", "name", "creator", "members", "created_at"]
