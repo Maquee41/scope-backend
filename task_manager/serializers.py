@@ -48,7 +48,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class WorkspaceSerializer(serializers.ModelSerializer):
-    creator = UserSerializer(read_only=True)
+    creator = serializers.HiddenField(default=serializers.CurrentUserDefault())
     members = UserSerializer(many=True, read_only=True)
 
     class Meta:
