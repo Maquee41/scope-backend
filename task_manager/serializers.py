@@ -27,6 +27,13 @@ class TaskFileSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
     files = TaskFileSerializer(many=True, read_only=True)
+    assignees = UserSerializer(many=True, read_only=True)
+    assignee_ids = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=User.objects.all(),
+        write_only=True,
+        source="assignees",
+    )
 
     class Meta:
         model = Task
@@ -40,6 +47,7 @@ class TaskSerializer(serializers.ModelSerializer):
             "status",
             "creator",
             "assignees",
+            "assignee_ids",
             "created_at",
             "updated_at",
             "comments",
