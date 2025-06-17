@@ -15,7 +15,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ["id", "author", "author_name", "text", "created_at"]
+        fields = ["id", "author_name", "text", "created_at", "task"]
+        read_only_fields = ["author"]
 
 
 class TaskFileSerializer(serializers.ModelSerializer):

@@ -128,6 +128,43 @@ class CommentViewSet(viewsets.ModelViewSet):
             task__workspace__members=self.request.user
         )
 
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+    @action(detail=False, methods=["get"], url_path="by-workspace")
+    def comments_by_workspace(self, request):
+        workspace_id = request.query_params.get("workspace_id")
+        task_id = request.query_params.get("task_id")
+
+        if not workspace_id:
+            return Response(
+                {"detail": "workspace_id is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            workspace = Workspace.objects.get(id=workspace_id)
+        except Workspace.DoesNotExist:
+            return Response(
+                {"detail": "Workspace not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        if request.user not in workspace.members.all():
+            return Response(
+                {"detail": "You are not a member of this workspace."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        comments = Comment.objects.filter(task__workspace=workspace)
+
+        if task_id:
+            comments = comments.filter(task_id=task_id)
+
+        comments = comments.select_related("task", "author")
+        serializer = self.get_serializer(comments, many=True)
+        return Response(serializer.data)
+
 
 class TaskFileViewSet(viewsets.ModelViewSet):
     serializer_class = TaskFileSerializer
