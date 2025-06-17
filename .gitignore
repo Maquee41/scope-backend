@@ -8,3 +8,6 @@ db.sqlite3
 .env
 
 .vscode/
+
+static/
+media/
