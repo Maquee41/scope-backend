@@ -1,5 +1,8 @@
+from datetime import datetime
+
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import (
     action,
@@ -79,6 +82,41 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
+
+    @action(detail=False, methods=["get"], url_path="by-date")
+    def tasks_by_date(self, request):
+        workspace_id = request.query_params.get("workspace_id")
+        date_str = request.query_params.get("date")
+
+        if not workspace_id or not date_str:
+            return Response(
+                {"detail": "workspace_id and date are required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            target_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+        except ValueError:
+            return Response(
+                {"detail": "Invalid date format. Use YYYY-MM-DD."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        start_datetime = timezone.make_aware(
+            datetime.combine(target_date, datetime.min.time())
+        )
+        end_datetime = timezone.make_aware(
+            datetime.combine(target_date, datetime.max.time())
+        )
+
+        tasks = Task.objects.filter(
+            workspace__id=workspace_id,
+            workspace__members=request.user,
+            deadline__range=(start_datetime, end_datetime),
+        )
+
+        serializer = self.get_serializer(tasks, many=True)
+        return Response(serializer.data)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
