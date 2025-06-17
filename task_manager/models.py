@@ -61,6 +61,14 @@ class Task(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
+class TaskFile(models.Model):
+    task = models.ForeignKey(
+        Task, on_delete=models.CASCADE, related_name="files"
+    )
+    file = models.FileField(upload_to="task_files/")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+
 class Comment(models.Model):
     task = models.ForeignKey(
         Task, on_delete=models.CASCADE, related_name="comments"
@@ -68,11 +76,6 @@ class Comment(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-
-
-class TaskFile(models.Model):
-    task = models.ForeignKey(
-        Task, on_delete=models.CASCADE, related_name="files"
+    files = models.ManyToManyField(
+        TaskFile, related_name="comments", blank=True
     )
-    file = models.FileField(upload_to="task_files/")
-    uploaded_at = models.DateTimeField(auto_now_add=True)

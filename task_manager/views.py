@@ -123,6 +123,13 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        comment = serializer.save(author=request.user)
+
+        return Response(CommentSerializer(comment).data, status=201)
+
     def get_queryset(self):
         return Comment.objects.filter(
             task__workspace__members=self.request.user
