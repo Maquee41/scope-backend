@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+from celery.schedules import crontab
 from dotenv import load_dotenv
 
 
@@ -33,6 +34,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "rest_framework.authtoken",
     "task_manager.apps.TaskManagerConfig",
+    "django_celery_beat",
     "drf_yasg",
 ]
 
@@ -107,6 +109,16 @@ SWAGGER_SETTINGS = {
         }
     },
     "USE_SESSION_AUTH": False,
+}
+
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
+
+CELERY_BEAT_SCHEDULE = {
+    "check-deadlines-every-5-min": {
+        "task": "task_manager.tasks.notify_upcoming_deadlines",
+        "schedule": crontab(minute="*/1"),
+    },
 }
 
 

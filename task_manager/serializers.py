@@ -1,7 +1,13 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from task_manager.models import Comment, Task, TaskFile, Workspace
+from task_manager.models import (
+    Comment,
+    Notification,
+    Task,
+    TaskFile,
+    Workspace,
+)
 from users.serializers import UserSerializer
 
 
@@ -87,3 +93,9 @@ class WorkspaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Workspace
         fields = ["id", "name", "creator", "members", "created_at"]
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = "__all__"

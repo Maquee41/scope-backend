@@ -14,10 +14,17 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from task_manager.models import Comment, Task, TaskFile, Workspace
+from task_manager.models import (
+    Comment,
+    Notification,
+    Task,
+    TaskFile,
+    Workspace,
+)
 from task_manager.permissions import IsWorkspaceMember
 from task_manager.serializers import (
     CommentSerializer,
+    NotificationSerializer,
     TaskFileSerializer,
     TaskSerializer,
     WorkspaceSerializer,
@@ -196,3 +203,13 @@ def get_workspace_details(request, workspace_id):
 
     serializer = WorkspaceSerializer(workspace)
     return Response(serializer.data)
+
+
+class NotificationViewSet(viewsets.ModelViewSet):
+    serializer_class = NotificationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Notification.objects.filter(user=self.request.user).order_by(
+            "-created_at"
+        )
